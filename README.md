@@ -12,9 +12,9 @@ UART-Parameters:
 Table 1 -- Сonnection UART
 | STM32F051DISCOVERY | USB/UART converter |
 |-------------|-------------|
-| 5V PIN   | VCC | 
-| GND   | GND   |
-| PA10 (UART1-TX) | TXD  |
-| PA9 (UART1-RX)   | RXD |
+|   5V PIN    |     VCC     | 
+|    GND      |     GND     |
+| PA10 (UART1-TX) |  TXD  |
+| PA9 (UART1-RX)   |  RXD  |
 
 ## 1.1 Description of the protocol (secret information)
