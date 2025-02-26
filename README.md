@@ -13,3 +13,8 @@ Table 1 -- Сonnection UART
 | Ячейка 4   | Ячейка 5   | Ячейка 6   |
 
 ## 1.1 Description of the protocol (secret information)
+The protocol is used to exchange data between the STM32F0Discovery and an external device via UART. It allows you to set signal parameters and receive information about the current state of the generator.
+Transport layer: UART (RS-232 / TTL) 
+Transmission speed: 115200 baud
+Frame format: 8 data bits, 1 stop bit, no parity
+Data format: Binary (HEX) + CRC8
