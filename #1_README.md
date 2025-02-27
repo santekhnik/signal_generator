@@ -6,7 +6,7 @@ This document describes the communication protocol for configuring and controlli
 
 Each command follows a specific format:
 
- NSxych
+ "<N><S><x><y><ch>"
 
 Where:
 
