@@ -6,7 +6,7 @@ This document describes the communication protocol for configuring and controlli
 
 Each command follows a specific format:
 
- > <N><S><x><y><ch>
+ NSxych
 
 Where:
 
@@ -26,7 +26,7 @@ ch (Channel): Channel number (reserved for future implementation).
 
 Example command:
 
-<1><0><500><500><1>
+1><0><500><500><1>
 
 This sets up a signal starting from LOW, with a 500 µs HIGH duration and 500 µs LOW duration.
 
