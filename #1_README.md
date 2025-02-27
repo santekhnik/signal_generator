@@ -6,7 +6,7 @@ This document describes the communication protocol for configuring and controlli
 
 Each command follows a specific format:
 
-<N><S><x><y><ch>
+ > <N><S><x><y><ch>
 
 Where:
 
