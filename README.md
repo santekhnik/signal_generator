@@ -1,37 +1,36 @@
-STM32F051 Discovery Board Setup
+# STM32F051 Discovery Board Setup
 
-Overview
+## Overview
+This guide covers setting up **STM32CubeIDE** for the **STM32F051 Discovery Board**, including **UART** configuration.
 
-This repository provides a guide to setting up the environment for the hardware part of a project using the STM32F051 Discovery Board. The project was initially required to be created using STM32CubeMX and Keil, but for convenience, STM32CubeIDE was used instead. The setup includes peripheral initialization for UART.
+## Prerequisites
+Ensure you have:
+- [STM32CubeIDE]
+- STM32F051 Discovery Board
+- USB Debugger (ST-Link V2 integr.)
+- Serial terminal software (e.g., PuTTY, Tera Term)
 
-Requirements
+## Setup Steps
+### 1. Create a New STM32CubeIDE Project
+1. Open **STM32CubeIDE**.
+2. Go to **File** -> **New** -> **STM32 Project**.
+3. Select **STM32F051R8**, click **Next**, name your project, and select **CubeIDE**.
+4. Click **Finish**.
 
-STM32F051 Discovery Board
+### 2. Configure Peripherals
+1. Open **Pinout & Configuration**.
+2. Enable **USART2** and assign **TX (PA2)** and **RX (PA3)**.
+3. Click **Project Manager**, name your project, and generate code.
 
-STM32CubeMX (latest version recommended)
+### 3. Build & Flash the Project
+1. Click **Project** -> **Build All**.
+2. Connect the board via USB.
+3. Go to **Run** -> **Run Configurations...**, select **STM32 Cortex-M C/C++ Application**, and configure the debugger.
+4. Click **Run** to flash the program.
 
-Keil uVision or STM32CubeIDE
+### 4. Test UART Communication
+1. Open a serial terminal and select the correct COM port.
+2. Set baud rate to **115200**.
 
-USB cable for programming/debugging
-
-UART terminal software (e.g., PuTTY, Tera Term)
-
-Setup Instructions
-
-Install STM32CubeMX from ST official website.
-
-Install Keil uVision or STM32CubeIDE, depending on preference.
-
-Create a new project in STM32CubeMX:
-
-Select the STM32F051 Discovery Board.
-
-Configure UART peripheral using CubeMX.
-
-Generate the project code for Keil or STM32CubeIDE.
-
-Open the generated project in the chosen IDE and implement the required application logic.
-
-Build and flash the firmware to the STM32F051 board.
-
-Open a UART terminal and verify communication.
+## Conclusion
+You have successfully set up **STM32CubeIDE** for the **STM32F051 Discovery Board*
