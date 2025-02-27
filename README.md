@@ -1,19 +1,82 @@
-# 1 Develop and document communication protocol
-Communication between a personal computer and the STM32F051DISCOVERY microcontroller takes place via UART. It allows you to set signal parameters and receive information about the current state of the generator.The hardware is implemented using an additional USB/UART-converter. The structural and functional diagram is shown in Figure 1.
+## Signal Generator
+---
 
-## &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ![image](https://github.com/user-attachments/assets/0d6041c3-9234-4133-a727-80c1f78fe9a0)
->                   Figure 1 - Structural and functional diagram
-The UART configuration parameters that will be implemented in the internal hardware of the project are considered.
-UART-Parameters: 
-* Transmission speed: 115200 baud
-* Frame format: 8 data bits, 1 stop bit, no parity
-* Data format: Binary (HEX) + CRC8
+## [Technical Task](technical_task.md)
 
+---
 
-Table 1 - Hardware connection between STM32F051DISCOVERY and USB/UART-converter
-| STM32F051DISCOVERY | USB/UART-converter |
-|-------------|-------------|
-|   5V PIN    |     VCC     | 
-|    GND      |     GND     |
-| PA10 (UART1-TX) |  TXD  |
-|  PA9 (UART1-RX) |  RXD  |
+# 1. Overview
+
+This document describes the communication protocol for configuring and controlling the pulse generator based on STM32. The protocol defines the structure of commands sent from a PC to the STM32 via UART and the responses sent back by the STM32.
+
+# 2. [Envoriment Setup](env_setup.md)
+
+# 3. Command Format
+
+Each command follows a specific format:
+```
+ 'N''S''x''y''ch'
+```
+Where:
+
+- N (Number): Sequence number of the signal. Always set to 1.
+
+- S (State): Initial level of the rectangular signal.
+
+- 0 - Starts from LOW level.
+
+- 1 - Starts from HIGH level.
+
+- x (High Duration): Duration of the HIGH level in microseconds.
+
+- y (Low Duration): Duration of the LOW level in microseconds.
+
+- ch (Channel): Channel number (reserved for future implementation).
+
+Example command:
+```
+'1''0''500''500'1'
+```
+This sets up a signal starting from LOW, with a 500 µs HIGH duration and 500 µs LOW duration.
+
+# 4. Communication Sequences
+
+## 4.1. PC to STM32 (Command Transmission)
+
+The PC sends a command string following the defined format over UART.
+
+## 4.2. STM32 to PC (Acknowledgment and Error Handling)
+
+On successful command reception and parameter validation, STM32 responds with:
+```
+ACK
+```
+If the received command has invalid parameters, STM32 responds with:
+```
+ERR: Invalid Parameter
+```
+If an unknown command is received, STM32 responds with:
+```
+ERR: Unknown Command
+```
+# 5. Error Handling
+
+## 5.1 Invalid Parameters
+
+If any parameter exceeds its allowable range, STM32 returns an error message.
+
+## 5.2 UART Communication Errors
+
+If a UART error occurs (parity error, framing error, etc.), the STM32 will discard the received data and send:
+```
+ERR: UART Failure
+```
+# 6. Future Enhancements
+
+Implementing multiple channel support.
+
+Expanding error messages for detailed diagnostics.
+
+Supporting additional waveform types.
+
+This protocol ensures structured communication between the PC and STM32 for precise control of pulse generation.
