@@ -23,7 +23,7 @@ Ensure you have:
 3. Click **Project Manager**, name your project, and generate code.
 
 ![image](https://github.com/user-attachments/assets/ea49912c-6125-4e35-ad45-05447cc51d79)
-> Figure 2
+> Figure 2. Confguration of pins
 
 ### 3. Build & Flash the Project
 1. Click **Project** -> **Build All**.
