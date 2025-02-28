@@ -76,3 +76,5 @@ Expanding error messages for detailed diagnostics.
 Supporting additional waveform types.
 
 This protocol ensures structured communication between the PC and STM32 for precise control of pulse generation.
+
+## 3.3  The program's response to possible errors
