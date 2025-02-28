@@ -32,7 +32,7 @@ To generate rectangular pulses, a command is sent from the user terminal, which 
 
 The proposed message format is as follows:
 
-█(<N> <S> <x> <y> <check>, #(1.1))
+█'N''S' 'x' 'y' 'check'
 
 Where:
 
@@ -48,7 +48,7 @@ check – Checksum, calculated as the sum of all previous parameters. This param
 
 Example of a Command:
 
-█(<1> <0> <1000> <500> <1501> #(1.2))
+█('1' '0' '1000' '500' '1501')
 
 Based on this command, the microcontroller will generate a rectangular pulse sequence:
 
