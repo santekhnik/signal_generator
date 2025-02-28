@@ -11,69 +11,65 @@ This document describes the communication protocol for configuring and controlli
 
 # 2. [Envoriment Setup](env_setup.md)
 
-# 3. Command Format
+# 3 Develop and document communication protocol 
 
-Each command follows a specific format:
-```
- 'N''S''x''y''ch'
-```
+## 3.1 Communication Protocol Description
+
+Communication between the STM32F051R8T6 microcontroller and a personal computer will be carried out using asynchronous UART/USART transmission. This allows setting signal parameters and obtaining information about the current state of the generator.
+
+The structural diagram of data transmission is shown in Figure 1.1.
+![image](https://github.com/user-attachments/assets/bb0f9d32-b3bd-48e2-90ae-bb6ef52ec5ab)
+
+Figure 1.1 – Structural Diagram of Communication between the STM32F051R8T6 Microcontroller and the Personal Computer
+
+Since the STM32F051 Discovery Board does not have a built-in USB/UART converter, an external module is used to establish a connection between the microcontroller and the personal computer, as depicted in Figure 1.1.
+
+On the personal computer, a user interface window will display input/output data and a virtual COM port connection window.
+
+## 3.2 Message and Data Packet Structure
+
+To generate rectangular pulses, a command is sent from the user terminal, which is converted into a binary or hexadecimal code combination and transmitted to the STM32F051R8T6 microcontroller via the UART protocol.
+
+The proposed message format is as follows:
+
+█(<N> <S> <x> <y> <check>, #(1.1))
+
 Where:
 
-- N (Number): Sequence number of the signal. Always set to 1.
+N – Signal number (since the project is designed for possible expansion to support different signal forms, each form will have its own sequential number). In the current setup, only one type of signal is used, assigned number 1.
 
-- S (State): Initial level of the rectangular signal.
+S – Initial state level of the rectangular signal (1 for high level, 0 for low level).
 
-- 0 - Starts from LOW level.
+x – Duration of the low-level period (in microseconds).
 
-- 1 - Starts from HIGH level.
+y – Duration of the high-level period (in microseconds).
 
-- x (High Duration): Duration of the HIGH level in microseconds.
+check – Checksum, calculated as the sum of all previous parameters. This parameter is computed separately in both the user interface software and the STM32F051R8T6 microcontroller firmware.
 
-- y (Low Duration): Duration of the LOW level in microseconds.
+Example of a Command:
 
-- ch (Channel): Channel number (reserved for future implementation).
+█(<1> <0> <1000> <500> <1501> #(1.2))
 
-Example command:
-```
-'1''0''500''500'1'
-```
-This sets up a signal starting from LOW, with a 500 µs HIGH duration and 500 µs LOW duration.
+Based on this command, the microcontroller will generate a rectangular pulse sequence:
 
-# 4. Communication Sequences
+The first signal is formed.
 
-## 4.1. PC to STM32 (Command Transmission)
+The sequence starts with a low level lasting 1000 µs.
 
-The PC sends a command string following the defined format over UART.
+Followed by a high level lasting 500 µs.
 
-## 4.2. STM32 to PC (Acknowledgment and Error Handling)
+Thus, the period of this signal is x + y, and the duty cycle is given by the ratio y / (x + y).
 
-On successful command reception and parameter validation, STM32 responds with:
-```
-ACK
-```
-If the received command has invalid parameters, STM32 responds with:
-```
-ERR: Invalid Parameter
-```
-If an unknown command is received, STM32 responds with:
-```
-ERR: Unknown Command
-```
-# 5. Error Handling
+The waveform corresponding to command (1.2) is shown in Figure 1.2.
+![image](https://github.com/user-attachments/assets/e10348c9-cf76-4e91-acbc-06e967b4b08b)
 
-## 5.1 Invalid Parameters
+Figure 1.2 – Rectangular Signal Generation for the Given Command
 
-If any parameter exceeds its allowable range, STM32 returns an error message.
+The microcontroller receives this command as a packet of hexadecimal messages (e.g., 0x01 0x00 0x00 for generating a PWM signal). Upon successful reception, the microcontroller responds with a confirmation message such as:
 
-## 5.2 UART Communication Errors
+Signal generate successful
 
-If a UART error occurs (parity error, framing error, etc.), the STM32 will discard the received data and send:
-```
-ERR: UART Failure
-```
-# 6. Future Enhancements
-
-Implementing multiple channel support.
+This communication protocol ensures reliable and structured data exchange between the user interface and the STM32F051R8T6 microcontroller for generating precise pulse sequences.
 
 Expanding error messages for detailed diagnostics.
 
