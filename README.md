@@ -31,7 +31,8 @@ Where:
 
 - y (Low Duration): Duration of the LOW level in microseconds.
 
-- ch (Channel): Channel number (reserved for future implementation).
+- ch (Check): check sum
+
 
 Example command:
 ```
