@@ -21,7 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -31,20 +32,25 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define SIZE_OF_ARRAY (5)
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
+
 
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart1;
 DMA_HandleTypeDef hdma_usart1_rx;
+DMA_HandleTypeDef hdma_usart1_tx;
 
 /* USER CODE BEGIN PV */
-
+uint8_t array_message[SIZE_OF_ARRAY] = {1,2,3,4,5};
+uint8_t array_buffer [SIZE_OF_ARRAY];
+uint8_t receive [SIZE_OF_ARRAY] = {'O','k'};
+uint8_t error_receive [SIZE_OF_ARRAY] = {'E','r','r','o','r'};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -53,12 +59,21 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
-
+void UART_Transmit(uint16_t byte_count, uint8_t *data_buffer_ptr);
+void UART_Receive(uint16_t byte_count, uint8_t *data_buffer_ptr);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void UART_Transmit (uint16_t byte_count, uint8_t *data_buffer_ptr)
+{
+    HAL_UART_Transmit(&huart1, data_buffer_ptr, byte_count, HAL_MAX_DELAY);
+}
 
+void UART_Receive(uint16_t byte_count, uint8_t *data_buffer_ptr)
+{
+    HAL_UART_Receive(&huart1, data_buffer_ptr, byte_count, HAL_MAX_DELAY);
+}
 /* USER CODE END 0 */
 
 /**
@@ -100,6 +115,17 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  UART_Receive(sizeof(array_buffer), array_buffer);
+
+	  uint8_t match = 1;
+	  for (int i = 0; i < SIZE_OF_ARRAY; i++)
+	  {
+		  if (array_buffer[i] != array_message[i])
+	          { match = 0; break; }
+	  }
+
+	  if (match) { UART_Transmit(sizeof(receive), receive); }
+	  else { UART_Transmit(sizeof(error_receive), error_receive); }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -196,9 +222,9 @@ static void MX_DMA_Init(void)
   __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
-  /* DMA1_Channel2_3_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel2_3_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Channel2_3_IRQn);
+  /* DMA1_Channel4_5_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel4_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel4_5_IRQn);
 
 }
 
@@ -209,7 +235,6 @@ static void MX_DMA_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
 /* USER CODE BEGIN MX_GPIO_Init_1 */
 /* USER CODE END MX_GPIO_Init_1 */
 
@@ -217,16 +242,6 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin : LED_Pin */
-  GPIO_InitStruct.Pin = LED_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
