@@ -22,17 +22,21 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
+#include <stdint.h>
+#include <stddef.h>
 #include <string.h>
+#include <stdlib.h>
+#include <inttypes.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+#define SIZE_OF_ARRAY (5)
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define SIZE_OF_ARRAY (5)
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -47,10 +51,9 @@ DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart1_tx;
 
 /* USER CODE BEGIN PV */
-uint8_t array_message[SIZE_OF_ARRAY] = {1,2,3,4,5};
-uint8_t array_buffer [SIZE_OF_ARRAY];
-uint8_t receive [SIZE_OF_ARRAY] = {'O','k'};
-uint8_t error_receive [SIZE_OF_ARRAY] = {'E','r','r','o','r'};
+uint8_t Data_Numbers[SIZE_OF_ARRAY];
+uint8_t Error_Receive[] = "Error";  // Замінили на строку "Error"
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -61,11 +64,13 @@ static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 void UART_Transmit(uint16_t byte_count, uint8_t *data_buffer_ptr);
 void UART_Receive(uint16_t byte_count, uint8_t *data_buffer_ptr);
+void UART_Data(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void UART_Transmit (uint16_t byte_count, uint8_t *data_buffer_ptr)
+
+void UART_Transmit(uint16_t byte_count, uint8_t *data_buffer_ptr)
 {
     HAL_UART_Transmit(&huart1, data_buffer_ptr, byte_count, HAL_MAX_DELAY);
 }
@@ -74,14 +79,57 @@ void UART_Receive(uint16_t byte_count, uint8_t *data_buffer_ptr)
 {
     HAL_UART_Receive(&huart1, data_buffer_ptr, byte_count, HAL_MAX_DELAY);
 }
-/* USER CODE END 0 */
+
+void UART_Data()
+{
+    uint8_t Data_Numbers[SIZE_OF_ARRAY] = {0};  // Очищений буфер
+    HAL_StatusTypeDef status;
+
+    // Очікуємо перший байт (блокує програму, поки немає вводу)
+    uint8_t first_byte;
+    status = HAL_UART_Receive(&huart1, &first_byte, 1, HAL_MAX_DELAY);
+    if (status != HAL_OK) {
+        UART_Transmit(strlen((char*)Error_Receive), Error_Receive);
+        return;
+    }
+
+    // Отримуємо решту 4 байтів (оскільки перший уже є)
+    Data_Numbers[0] = first_byte;
+    status = HAL_UART_Receive(&huart1, &Data_Numbers[1], SIZE_OF_ARRAY - 1, 100);
+
+    if (status != HAL_OK) {
+        UART_Transmit(strlen((char*)Error_Receive), Error_Receive);
+        return;
+    }
+
+    // Перевіряємо, чи є зайві байти (якщо ввели більше 5)
+    uint8_t extra_byte;
+    if (HAL_UART_Receive(&huart1, &extra_byte, 1, 10) == HAL_OK) {
+        UART_Transmit(strlen((char*)Error_Receive), Error_Receive);
+        return;
+    }
+
+    // Якщо рівно 5 байтів, рахуємо XOR
+    uint8_t xorsum = 0;
+    for (int i = 0; i < SIZE_OF_ARRAY; i++) {
+        xorsum ^= Data_Numbers[i];
+    }
+
+    char output[10];
+    snprintf(output, sizeof(output), "0x%02X", xorsum);
+    UART_Transmit(strlen(output), (uint8_t*)output);
+}
+
+	/* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
   * @retval int
   */
-int main(void)
-{
+int main(void) {
+/* Функція для передачі даних по UART */
+
+
 
   /* USER CODE BEGIN 1 */
 
@@ -101,6 +149,7 @@ int main(void)
 
   /* USER CODE BEGIN SysInit */
 
+
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -115,17 +164,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  UART_Receive(sizeof(array_buffer), array_buffer);
 
-	  uint8_t match = 1;
-	  for (int i = 0; i < SIZE_OF_ARRAY; i++)
-	  {
-		  if (array_buffer[i] != array_message[i])
-	          { match = 0; break; }
-	  }
+	  UART_Data ();
 
-	  if (match) { UART_Transmit(sizeof(receive), receive); }
-	  else { UART_Transmit(sizeof(error_receive), error_receive); }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
