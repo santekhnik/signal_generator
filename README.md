@@ -292,5 +292,7 @@ Figure 6.2 – Result of the program execution (screenshot from the RealTerm ter
 
 As can be seen from Figure 4.2, the program calculates the sum of numbers modulo 2 if the number of numbers is five, if more or less – the program will give an error.
 
-## 6.3 Formulation of conclusions for the fourth section
-During the work, an analysis was conducted of various data integrity control methods, in particular BCC (block check character), CRC (cyclic redundancy check) and simple p
+## 6.3 Formulation of conclusions
+In the course of the work, an analysis was carried out of various methods of data integrity control, in particular BCC (block check character), CRC (cyclic redundancy check) and simple byte summation. It was found that the BCC method based on the XOR operation is the simplest and fastest to implement, although it does not provide a high level of protection against errors compared to CRC.
+The UART_Data() function was developed and implemented, which receives an array of numbers via the UART interface, checks their number and calculates the checksum using the BCC method. If the number of received bytes is not equal to five, the function sends an error message to the terminal.
+The proposed checksum verification method based on the XOR operation is effective for applications where basic data integrity verification is required, for example, in simple embedded systems that transmit data packets.
