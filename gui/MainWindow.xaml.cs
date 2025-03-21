@@ -1,153 +1,315 @@
-﻿using System;
+﻿using System.IO;
 using System.IO.Ports;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace WpfApp3
 {
     public partial class MainWindow : Window
     {
-        private SerialPort serialPort; // Оголошення змінної для порту серійного зв'язку
+        private SerialPort serialPort;
 
         public MainWindow()
         {
-            InitializeComponent(); // Ініціалізація компонентів вікна
-            TypeComboBox.Items.Add("Прямокутний сигнал"); // Додавання елемента в комбінований список для типу сигналу
-            TypeComboBox.Items.Add("Синус"); // Додавання елемента в комбінований список для типу сигналу
-            TypeComboBox.SelectedIndex = 0; // Встановлюємо значення за замовчуванням (Прямокутний сигнал)
+            InitializeComponent();
+            TypeComboBox.Items.Add("PWM");
+            TypeComboBox.Items.Add("SIN");
+            TypeComboBox.Items.Add("TRI");
+            TypeComboBox.SelectedIndex = 0;
 
-            SignalLevlBox.Items.Add("Високий"); // Додавання елемента для рівня сигналу (Високий)
-            SignalLevlBox.Items.Add("Низький"); // Додавання елемента для рівня сигналу (Низький)
-            SignalLevlBox.SelectedIndex = 0; // Встановлюємо значення за замовчуванням (Високий)
-        }
+            SignalLevlBox.Items.Add("HIGH");
+            SignalLevlBox.Items.Add("LOW");
+            SignalLevlBox.SelectedIndex = 0;
 
-        // Обчислення чексу для періоду, глибини, типу сигналу і рівня сигналу
-        private byte CalculateChecksum(long signalType, long signalLevel, long depth, long period)
-        {
-            long checksum = 0;  // Використовуємо тип long для обробки великих чисел
+            this.Closing += MainWindow_Closing;
 
-            // Розбиваємо значення на байти і зберігаємо їх в окремих змінних
-
-            // Для Типу сигналу (1 байт)
-            byte signalTypeByte = (byte)(signalType & 0xFF);  // Операція маски для отримання молодшого байта
-            // Для Рівня сигналу (1 байт)
-            byte signalLevelByte = (byte)(signalLevel & 0xFF);  // Операція маски для отримання молодшого байта
-
-            // Розбиваємо глибину на два байти (молодший і старший)
-            byte depthLowByte = (byte)(depth & 0xFF);              // Молодший байт глибини
-            byte depthHighByte = (byte)((depth >> 8) & 0xFF);      // Старший байт глибини
-
-            // Розбиваємо період на два байти (молодший і старший)
-            byte periodLowByte = (byte)(period & 0xFF);            // Молодший байт періоду
-            byte periodHighByte = (byte)((period >> 8) & 0xFF);    // Старший байт періоду
-
-            // Тепер XOR кожного байта по черзі
-
-            checksum ^= signalTypeByte;  // XOR для Типу сигналу
-            checksum ^= signalLevelByte; // XOR для Рівня сигналу
-
-            checksum ^= depthLowByte;    // XOR для Молодшого байту глибини
-            checksum ^= depthHighByte;   // XOR для Старшого байту глибини
-
-            checksum ^= periodLowByte;   // XOR для Молодшого байту періоду
-            checksum ^= periodHighByte;  // XOR для Старшого байту періоду
-
-            // Повертаємо результат чексу, обмежений 1 байтом
-            return (byte)(checksum & 0xFF);  // Обмежуємо результат до 1 байта, щоб отримати значення від 0 до 255
         }
 
         private void SendButton_Click(object sender, RoutedEventArgs e)
         {
-            string portName = PortTextBox.Text;  // Отримуємо ім'я порту з текстового поля
-            string periodText = PeriodTextBox.Text;  // Отримуємо значення періоду з текстового поля
-            string depthText = DetheTextBox.Text;  // Отримуємо значення глибини з текстового поля
-            string signalTypeText = TypeComboBox.SelectedItem.ToString();  // Отримуємо вибраний тип сигналу з комбінованого списку
-            string signalLevelText = SignalLevlBox.SelectedItem.ToString();  // Отримуємо вибраний рівень сигналу з комбінованого списку
+            string portName = PortTextBox.Text;
+            string periodText = PeriodTextBox.Text;
+            string depthText = DetheTextBox.Text;
+            string signalTypeText = TypeComboBox.SelectedItem.ToString();
+            string signalLevelText = SignalLevlBox.SelectedItem.ToString();
 
             try
             {
-                // Перевірка, чи введено коректні числа для Period і Depth
-                if (!long.TryParse(periodText, out long period))
+
+                if (serialPort == null || serialPort.PortName != portName)
                 {
-                    MessageBox.Show("Некоректне значення періоду.");  // Якщо значення періоду некоректне, виводимо повідомлення
+                    CloseSerialPort(); // Закриваємо попередній порт перед відкриттям нового
+                    serialPort = new SerialPort(portName, 115200, Parity.None, 8, StopBits.One);
+                }
+
+                // Відкриваємо порт, якщо він ще не відкритий
+                if (!serialPort.IsOpen)
+                {
+                    serialPort.DataReceived += SerialPort_DataReceived;
+                    serialPort.Open();
+                }
+
+
+                if (string.IsNullOrWhiteSpace(depthText) && string.IsNullOrWhiteSpace(periodText))
+                {
+                    MessageBox.Show("Both depth and period values are missing.");
                     return;
                 }
 
-                if (!long.TryParse(depthText, out long depth))
+                // Перевіряємо, чи введені значення є числами
+                bool isDepthValid = uint.TryParse(depthText, out uint depth);
+                bool isPeriodValid = uint.TryParse(periodText, out uint period);
+
+                // Перевіряємо вихід за межі
+                bool isDepthOutOfRange = isDepthValid && (depth < 0 || depth > 65535);
+                bool isPeriodOutOfRange = isPeriodValid && (period < 0 || period > 65535);
+
+                if (isDepthOutOfRange && isPeriodOutOfRange)
                 {
-                    MessageBox.Show("Некоректне значення глибини.");  // Якщо значення глибини некоректне, виводимо повідомлення
+                    MessageBox.Show("Both depth and period values are out of range (0 μs to 65535 μs).");
                     return;
                 }
 
-                // Перевірка на наявність правильного типу сигналу
-                long signalType = 0;
-                if (signalTypeText == "Прямокутний сигнал")
+                if (!isDepthValid || isDepthOutOfRange)
                 {
-                    signalType = 1; // Прямокутний сигнал
-                }
-                else if (signalTypeText == "Синус")
-                {
-                    signalType = 2; // Синус
-                }
-                else
-                {
-                    MessageBox.Show("Некоректний тип сигналу.");  // Якщо тип сигналу некоректний, виводимо повідомлення
+                    if (!string.IsNullOrWhiteSpace(depthText) && !depthText.All(char.IsDigit))
+                    {
+                        MessageBox.Show("Depth value contains invalid characters. Only numbers are allowed.");
+                    }
+                    else if (isDepthOutOfRange)
+                    {
+                        MessageBox.Show("Incorrect depth value (Value can be from 0 μs to 65535 μs).");
+                    }
                     return;
                 }
 
-                // Перевірка на наявність правильного рівня сигналу
-                long signalLevel = 0;
-                if (signalLevelText == "Високий")
+                if (!isPeriodValid || isPeriodOutOfRange)
                 {
-                    signalLevel = 2; // Високий рівень
-                }
-                else if (signalLevelText == "Низький")
-                {
-                    signalLevel = 1; // Низький рівень
-                }
-                else
-                {
-                    MessageBox.Show("Некоректний рівень сигналу.");  // Якщо рівень сигналу некоректний, виводимо повідомлення
+                    if (!string.IsNullOrWhiteSpace(periodText) && !periodText.All(char.IsDigit))
+                    {
+                        MessageBox.Show("Period value contains invalid characters. Only numbers are allowed.");
+                    }
+                    else if (isPeriodOutOfRange)
+                    {
+                        MessageBox.Show("Incorrect period value (Value can be from  μs to 65535 μs).");
+                    }
                     return;
                 }
 
-                // Перевірка на наявність відкритого порту
-                if (serialPort == null || !serialPort.IsOpen)
+
+                // Вибір типу сигналу 
+                byte signalType;
+                switch (signalTypeText)
                 {
-                    serialPort = new SerialPort(portName, 115400, Parity.None, 8, StopBits.One);  // Відкриваємо порт з відповідними налаштуваннями
-                    serialPort.Open();  // Встановлюємо з'єднання з портом
-                    MessageBox.Show("Підключення встановлено.");  // Виводимо повідомлення про успішне підключення
+                    case "PWM":
+                        signalType = 1; // Генерація ПРямокутного сигналу 
+                        break;
+                    case "SIN":
+                        signalType = 2; // Синус
+                        break;
+                    case "TRI":
+                        signalType = 3; // Трикутник
+                        break;
+                    default:
+                        signalType = 1; // ДефолтПрямокутний
+                        break;
                 }
 
-                // Обчислюємо чек суму
-                byte checksum = CalculateChecksum(signalType, signalLevel, depth, period);  // Викликаємо метод для обчислення чексу
+                byte signalLevel = signalLevelText == "LOW" ? (byte)1 : (byte)2;
 
-                // Виводимо дані у новому порядку
-                MessageBox.Show($"Дані відправлено:\nТип сигналу = {signalType}\nРівень сигналу = {signalLevel}\nГлибина = {depth}\nПерiод = {period}\nЧек сума: {checksum.ToString()}");  // Виводимо результат на екран
+                if (serialPort == null)
+                {
+                    serialPort = new SerialPort(portName, 115200, Parity.None, 8, StopBits.One);
+                }
+
+                if (!serialPort.IsOpen)
+                {
+                    serialPort.DataReceived += SerialPort_DataReceived; // Додаємо тільки один раз
+                    serialPort.Open();
+                }
+
+                byte[] commandPacket = new byte[]
+                {
+                     signalType,
+                     signalLevel,
+
+                     (byte)(depth ), (byte)((depth >> 8) & 0xFF),(byte)((depth >> 16) & 0xFF),(byte)((depth >> 24) & 0xFF),
+                     (byte)(period ), (byte)((period >> 8) & 0xFF) , (byte)((period >> 16) & 0xFF),(byte)((period >> 24) & 0xFF),
+                };
+
+                byte checksum = CalculateChecksum.CalculateChecksum_Function(signalType, signalLevel, depth, period);
+
+                byte[] fullPacket = new byte[commandPacket.Length + 2];
+                Array.Copy(commandPacket, fullPacket, commandPacket.Length);
+
+                fullPacket[fullPacket.Length - 2] = checksum;
+
+                SendToDevice(fullPacket);
+
+                //OutputTextBox.Text += $"\nДані відправлено:\nТип сигналу = {signalType}\nРівень сигналу = {signalLevel}\nГлибина = {depth}\nПеріод = {period}\nЧек сума: {checksum}";
+                OutputTextBox.ScrollToEnd();
+
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Помилка: {ex.Message}");  // Виводимо повідомлення про помилку, якщо щось пішло не так
+                MessageBox.Show($"Error: {ex.Message}");
             }
         }
 
-        private void DetheTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+
+
+        private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            // Обробник змін у текстовому полі для глибини (якщо потрібно)
+            try
+            {
+                var serialPort = (SerialPort)sender;
+
+                if (serialPort == null || !serialPort.IsOpen)
+                    return; // Перевіряємо, чи порт відкритий перед читанням
+                while (serialPort.BytesToRead > 0)
+                {
+                    int b = serialPort.ReadByte();
+                    Dispatcher.Invoke(() =>
+                    {
+                        if (b == 0x031) // Якщо отримано 1 (0x01 у HEX)
+                        {
+                            OutputTextBox.Text += "\n📢 Start of signal generation !";
+                        }
+                        else if (b == 0x032) // Якщо отримано 2 (0x02 у HEX)
+                        {
+                            OutputTextBox.Text += "\n⚠️ The checksum did not match !";
+                        }
+                        /*
+                        else
+                        {
+                            OutputTextBox.Text += $"\nОтримано байт: {b:X2} (Dec: {b})";
+                        }
+                        */
+                        OutputTextBox.ScrollToEnd();
+                        OutputTextBox.Text += $" \n---- ---- ---- ---- ";
+
+                    });
+
+                }
+            }
+
+            catch (IOException ex)
+            {
+                if (serialPort != null && serialPort.IsOpen) // Запобігаємо обробці, якщо порт уже закритий
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        OutputTextBox.Text += "\nReception error (IO): " + ex.Message;
+                    });
+                }
+            }
+            catch (InvalidOperationException)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    OutputTextBox.Text += "\nReceive error: port closed.";
+                });
+            }
+            catch (Exception ex)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    OutputTextBox.Text += "\nReception error: " + ex.Message;
+                });
+            }
         }
 
-        private void PortTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+
+
+        private void SendToDevice(byte[] data)
         {
-            // Обробник змін у полі порту (якщо потрібно)
+            if (serialPort.IsOpen)
+            {
+                serialPort.Write(data, 0, data.Length);
+            }
         }
 
-        private void TypeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void CloseSerialPort()
         {
-            // Обробник зміни типу даних (якщо потрібно)
+            if (serialPort != null)
+            {
+                if (serialPort.IsOpen)
+                {
+                    serialPort.DataReceived -= SerialPort_DataReceived;  // Видаляємо обробник
+                    serialPort.Close();
+                }
+                serialPort.Dispose();
+                serialPort = null;
+            }
+        }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            CloseSerialPort(); // Закриваємо порт перед виходом
+        }
+
+
+
+        private void TypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+
+            if (TypeComboBox.SelectedItem != null)
+            {
+                string selectedType = TypeComboBox.SelectedItem.ToString();
+                bool isPwm = selectedType == "PWM";
+
+                SignalLevlPanel.Visibility = isPwm ? Visibility.Visible : Visibility.Collapsed;
+                DetheTextPanel.Visibility = isPwm ? Visibility.Visible : Visibility.Collapsed;
+
+                // Якщо вибрано не "PWM", встановлюємо глибину в 0
+                if (!isPwm)
+                {
+                    DetheTextBox.Text = "0";
+                }
+
+                // PeriodPanel залишається видимим незалежно від вибору
+            }
+        }
+
+        private void PortTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            // Логіка обробки зміни тексту в полі вводу
+        }
+
+        private void ScanPort(object sender, RoutedEventArgs e)
+        {
+
+            try
+            {
+                string[] ports = SerialPort.GetPortNames(); // Отримуємо список доступних COM-портів
+
+                if (ports.Length > 0)
+                {
+                    PortTextBox.Text = ports[0]; // Встановлюємо перший знайдений порт у TextBox
+                }
+                else
+                {
+                    PortTextBox.Text = ""; // Очищаємо поле, якщо портів немає
+                    MessageBox.Show("No COM port found!", "Error",
+                                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error while scanning ports: {ex.Message}",
+                                "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Info_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Робота для Антона :) \n[ASCII арт]");  // Виведення повідомлення при натисканні на кнопку "Info"
+            MessageBox.Show(" Folk Signal Generator \n Version 3.0.1 \n Created by CtrlAltDelete Team: \n Ivan Bortsikh and Taras Bilyk \n Build platform: 64-bit x86 Windows\n Compiler: emulating Visual Studio 2022\n © 2024. All rights reserved.\n Folk Signal Generator is a program for configuring a signal generator with a period range from 1 µs to 1 s.The interface allows users to select signal parameters and send them to the device via a serial port.The generator supports sine, triangular, and square waveforms.\n How to Use:\n 1 Launching the Program\n Open Folk Signal Generator.Ensure the generator is connected to the computer via the appropriate COM port.\n 2 Selecting Signal Parameters:\n 2.1 Type: Choose the signal shape (sine, triangular, or square).\n 2.2 Port: Select the COM port used for data transmission.\n 2.3 Signal Level: Set the signal level (low or high).\n 2.4 Depth: Enter the desired signal depth.\n 2.5 Period: Specify the signal generation period(from 1 µs to 1 s).\n 3 Sending Configuration:\n Click the Send button to transmit the settings to the generator.The lower field will display the execution status and received responses.\n 4 Error Diagnostics:\n 4.1 If the status field displays \"ERROR,\" check the cable connection or port.\n 4.2 If signal generation does not work, ensure the parameters are within allowable values and the COM port is open.\n 5 Verifying Operation:\n If the generator successfully receives the command, the program will display a response (e.g., \"Received byte: 06F\").\n 6 Closing the Program:\n When finished, click the \"X\" button in the upper right corner to close the window.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void DetheTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            // Логіка обробки зміни тексту
         }
     }
 }
