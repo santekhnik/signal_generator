@@ -1,14 +1,22 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\User\\source\\repos\\WpfApp3\\",
+  "WorkspaceRootPath": "C:\\Users\\ivanb\\Desktop\\Global Logic\\WpfApp3\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{543D1B87-447E-4725-A942-B7938501A0F4}|WpfApp3.csproj|c:\\users\\user\\source\\repos\\wpfapp3\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{543D1B87-447E-4725-A942-B7938501A0F4}|WpfApp3.csproj|c:\\users\\ivanb\\desktop\\global logic\\wpfapp3\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{543D1B87-447E-4725-A942-B7938501A0F4}|WpfApp3.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{543D1B87-447E-4725-A942-B7938501A0F4}|WpfApp3.csproj|c:\\users\\ivanb\\desktop\\global logic\\wpfapp3\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{543D1B87-447E-4725-A942-B7938501A0F4}|WpfApp3.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{543D1B87-447E-4725-A942-B7938501A0F4}|WpfApp3.csproj|c:\\users\\user\\source\\repos\\wpfapp3\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{543D1B87-447E-4725-A942-B7938501A0F4}|WpfApp3.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{543D1B87-447E-4725-A942-B7938501A0F4}|WpfApp3.csproj|c:\\users\\ivanb\\desktop\\global logic\\wpfapp3\\culculatechecksum.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{543D1B87-447E-4725-A942-B7938501A0F4}|WpfApp3.csproj|solutionrelative:culculatechecksum.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{543D1B87-447E-4725-A942-B7938501A0F4}|WpfApp3.csproj|c:\\users\\ivanb\\desktop\\global logic\\wpfapp3\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{543D1B87-447E-4725-A942-B7938501A0F4}|WpfApp3.csproj|solutionrelative:app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,32 +26,71 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "MainWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\WpfApp3\\MainWindow.xaml",
-              "RelativeDocumentMoniker": "MainWindow.xaml",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\WpfApp3\\MainWindow.xaml",
-              "RelativeToolTip": "MainWindow.xaml",
+              "DocumentIndex": 2,
+              "Title": "CulculateChecksum.cs",
+              "DocumentMoniker": "C:\\Users\\ivanb\\Desktop\\Global Logic\\WpfApp3\\CulculateChecksum.cs",
+              "RelativeDocumentMoniker": "CulculateChecksum.cs",
+              "ToolTip": "C:\\Users\\ivanb\\Desktop\\Global Logic\\WpfApp3\\CulculateChecksum.cs*",
+              "RelativeToolTip": "CulculateChecksum.cs*",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAIwCAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-13T10:17:41.375Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "App.xaml",
+              "DocumentMoniker": "C:\\Users\\ivanb\\Desktop\\Global Logic\\WpfApp3\\App.xaml",
+              "RelativeDocumentMoniker": "App.xaml",
+              "ToolTip": "C:\\Users\\ivanb\\Desktop\\Global Logic\\WpfApp3\\App.xaml",
+              "RelativeToolTip": "App.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-02-26T21:01:10.734Z",
+              "WhenOpened": "2025-02-27T11:28:03.602Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\ivanb\\Desktop\\Global Logic\\WpfApp3\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "MainWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\ivanb\\Desktop\\Global Logic\\WpfApp3\\MainWindow.xaml.cs",
+              "RelativeToolTip": "MainWindow.xaml.cs",
+              "ViewState": "AgIAABABAAAAAAAAAAAIwCwBAABXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-26T21:00:53.373Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "MainWindow.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\User\\source\\repos\\WpfApp3\\MainWindow.xaml.cs",
-              "RelativeDocumentMoniker": "MainWindow.xaml.cs",
-              "ToolTip": "C:\\Users\\User\\source\\repos\\WpfApp3\\MainWindow.xaml.cs*",
-              "RelativeToolTip": "MainWindow.xaml.cs*",
-              "ViewState": "AgIAAFQAAAAAAAAAAAAQwH0AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-26T21:00:53.373Z",
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\ivanb\\Desktop\\Global Logic\\WpfApp3\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "MainWindow.xaml",
+              "ToolTip": "C:\\Users\\ivanb\\Desktop\\Global Logic\\WpfApp3\\MainWindow.xaml",
+              "RelativeToolTip": "MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-03-03T19:25:59.958Z",
               "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
             }
           ]
         }

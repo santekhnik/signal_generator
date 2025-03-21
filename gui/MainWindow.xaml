@@ -1,9 +1,9 @@
 ﻿<Window x:Class="WpfApp3.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Folk Signal Generator" Height="400" Width="330
-        ">
-    <Grid Background="#FF383838">
+        Title="Folk Signal Generator" Height="550" Width="330
+        " Background="#FF757575">
+    <Grid Background="#FF464646">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -18,14 +18,22 @@
 
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="5,5,5,5">
-            <TextBlock Text="Type:    " VerticalAlignment="Center" Width="70" FontFamily="Century" FontWeight="Bold"/>
-            <ComboBox Width="80" Margin="5" Name="TypeComboBox" Height="20" SelectionChanged="TypeComboBox_SelectionChanged" IsEditable="True" IsReadOnly="True" OpacityMask="#FF909090" Foreground="#FF909090" BorderBrush="#FF909090">
-                <ComboBox.Background>
-                    <LinearGradientBrush EndPoint="0,1">
-                        <GradientStop Color="#FF909090" Offset="0.943"/>
-                        <GradientStop Color="#FF909090" Offset="1"/>
-                    </LinearGradientBrush>
-                </ComboBox.Background>
+            <TextBlock Text="Type:    " VerticalAlignment="Center" Width="70" 
+               FontFamily="Century" FontWeight="Bold" Foreground="Black"/>
+            <ComboBox Width="80" Margin="5" Name="TypeComboBox" Height="20" 
+              SelectionChanged="TypeComboBox_SelectionChanged" 
+              IsEditable="True" IsReadOnly="True" 
+              Foreground="Black" BorderBrush="Gray" Background="Gray"
+              FontWeight="Bold">
+                <!-- Змінено товщину тексту -->
+                <ComboBox.ItemContainerStyle>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="Foreground" Value="Black"/>
+                        <Setter Property="Background" Value="LightGray"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
+                        <!-- Товщина тексту у списку -->
+                    </Style>
+                </ComboBox.ItemContainerStyle>
             </ComboBox>
         </StackPanel>
 
@@ -34,32 +42,52 @@
             <TextBox Width="80" Margin="5" Name="PortTextBox" Height="20" Background="#FF909090" TextChanged="PortTextBox_TextChanged"/>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="5,5,5,5">
-            <TextBlock Text="SignalLevl:    " VerticalAlignment="Center" Width="70" FontFamily="Century" FontWeight="Bold"/>
-            <ComboBox Width="80" Margin="5" Name="SignalLevlBox" Height="20" SelectionChanged="TypeComboBox_SelectionChanged" IsEditable="True" IsReadOnly="True" OpacityMask="#FF909090" Foreground="#FF909090" BorderBrush="#FF909090">
-                <ComboBox.Background>
-                    <LinearGradientBrush EndPoint="0,1">
-                        <GradientStop Color="#FF909090" Offset="0.943"/>
-                        <GradientStop Color="#FF909090" Offset="1"/>
-                    </LinearGradientBrush>
-                </ComboBox.Background>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="25,5,5,5">
+            <Button Content="Scan" Grid.Row="2" Margin="150,7,80,7" x:Name="Scan" Height="20" Width="45" Background="#FF909090" Click="ScanPort" FontWeight="Bold" FontFamily="Century"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="5,5,5,5" Name="SignalLevlPanel" >
+            <TextBlock Text="SignalLevel:    " VerticalAlignment="Center" Width="70" 
+               FontFamily="Century" FontWeight="Bold"/>
+            <ComboBox Width="80" Margin="5" Name="SignalLevlBox" Height="20" 
+              SelectionChanged="TypeComboBox_SelectionChanged" 
+              IsEditable="True" IsReadOnly="True" 
+              Foreground="Black" BorderBrush="Gray" Background="Gray"
+              FontWeight="Bold">
+                <!-- Тут змінено товщину тексту -->
+                <ComboBox.ItemContainerStyle>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="Foreground" Value="Black"/>
+                        <Setter Property="Background" Value="LightGray"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
+
+                    </Style>
+                </ComboBox.ItemContainerStyle>
             </ComboBox>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="4" Margin="5,5,5,5">
-            <TextBlock Text="Depthe:" VerticalAlignment="Center" Width="70" Height="16" FontFamily="Century" FontWeight="Bold"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="4" Margin="5,5,5,5" Name="DetheTextPanel" >
+            <TextBlock Text="Depth:" VerticalAlignment="Center" Width="70" Height="16" FontFamily="Century" FontWeight="Bold"/>
             <TextBox Width="80" Margin="5" Name="DetheTextBox" Height="20" Background="#FF909090" TextChanged="DetheTextBox_TextChanged"/>
+            <TextBlock Text=" μs "   Height="20" RenderTransformOrigin="1.159,0.522" FontWeight="Bold" FontSize="14"/>
         </StackPanel>
 
 
         <StackPanel Orientation="Horizontal" Grid.Row="5" Margin="5,5,5,5" Height="30">
             <TextBlock Text="Period:  " VerticalAlignment="Center" Width="76" FontFamily="Century" FontWeight="Bold"/>
             <TextBox Width="80" x:Name="PeriodTextBox" Height="20" Background="#FF909090"/>
+            <TextBlock Text=" μs " Height="20" RenderTransformOrigin="1.159,0.522" Margin="4,0,0,0" FontWeight="Bold" FontSize="14"/>
         </StackPanel>
+
 
         <Button Content="Send" Grid.Row="6" Margin="25,7,25,7" Name="SendButton" Height="30" Background="#FF909090" Click="SendButton_Click" FontFamily="Century" FontWeight="Bold"/>
 
-        <Button Content="i" Grid.Row="0" Margin="1,7,277,7" x:Name="I" Height="30" Width="40" Background="#FF909090" Click="Info_Click" FontSize="20" FontWeight="Bold" FontFamily="Century"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,0" Height="50
+                    ">
+            <Button  Content="i"  Grid.Row="0" Margin="7,7,277,7" x:Name="I" Height="30" Width="40" Background="#FF909090" Click="Info_Click" FontSize="20" FontWeight="Bold" FontFamily="Century"/>
+        </StackPanel>
+
 
         <TextBox Grid.Row="7" Margin="25,25,25,25" Name="OutputTextBox" IsReadOnly="True" Background="#FF909090"/>
     </Grid>
